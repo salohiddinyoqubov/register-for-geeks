@@ -61,9 +61,5 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
 
-        response_data = {
-            'message': 'User created successfully',
-            'username': user.username,
-        }
 
-        return Response(response_data, status=status.HTTP_201_CREATED, content_type="application/json")
+        return user
