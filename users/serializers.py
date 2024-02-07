@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from rest_framework.response import Response
+from rest_framework import status
 
 from django.contrib.auth import get_user_model
 
@@ -42,9 +44,8 @@ class UserSerializer(serializers.ModelSerializer):
         password = data.get('password')
         password_confirm = data.get('password_confirm')
 
-
         if password and password_confirm and password != password_confirm:
-            raise serializers.ValidationError("Пароллар бир хил эмас!")
+            raise serializers.ValidationError("The password and the repeated password are not the same!")
 
         return data
 
@@ -53,15 +54,16 @@ class UserSerializer(serializers.ModelSerializer):
         password = validated_data.get("password")
 
         if User.objects.filter(username=username).exists():
-            raise serializers.ValidationError("Бундай фойдаланувчи аллақачон мавжуд.")
+            raise serializers.ValidationError("User already exists.")
 
         user = User(username=username)
-
-
-
 
         user.set_password(password)
         user.save()
 
-        return user
+        response_data = {
+            'message': 'User created successfully',
+            'username': user.username,
+        }
 
+        return Response(response_data, status=status.HTTP_201_CREATED, content_type="application/json")
