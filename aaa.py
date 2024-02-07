@@ -2,7 +2,7 @@ import http.client
 import mimetypes
 from codecs import encode
 
-conn = http.client.HTTPConnection("127.0.0.1:8000")
+conn = http.client.HTTPSConnection("sierus2.pythonanywhere.com")
 dataList = []
 boundary = 'wL36Yn8afVp8Ag7AmP8qZ0SA4n1v9T'
 dataList.append(encode('--' + boundary))
@@ -11,7 +11,7 @@ dataList.append(encode('Content-Disposition: form-data; name=username;'))
 dataList.append(encode('Content-Type: {}'.format('text/plain')))
 dataList.append(encode(''))
 
-dataList.append(encode("test23"))
+dataList.append(encode("test25"))
 dataList.append(encode('--' + boundary))
 dataList.append(encode('Content-Disposition: form-data; name=password;'))
 
