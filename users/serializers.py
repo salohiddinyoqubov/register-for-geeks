@@ -17,49 +17,117 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True,
-        required=True,
         min_length=8,
-        max_length=20,
+        required=True,
         style={'input_type': 'password'}
     )
 
     password_confirm = serializers.CharField(
         write_only=True,
+        min_length=8,
         required=True,
         style={'input_type': 'password'}
     )
 
     username = serializers.CharField(
-        validators=[UnicodeUsernameValidator()],
-        min_length=3,
+        style={'input_type': 'text'},
         max_length=20,
-        required=True
     )
 
     class Meta:
         model = User
-        fields = ["username", "password", "password_confirm"]
+        fields = ('username', 'password', 'password_confirm')
 
     def validate(self, data):
         password = data.get('password')
         password_confirm = data.get('password_confirm')
-
-        if password and password_confirm and password != password_confirm:
-            raise serializers.ValidationError("The password and the repeated password are not the same!")
+        if password != password_confirm:
+            raise serializers.ValidationError("Parollar bir xil emas! Iltimos parollarni bir xil kiriting.")
 
         return data
 
     def create(self, validated_data):
-        username = validated_data.get("username")
-        password = validated_data.get("password")
+        password = validated_data.get('password') # m6232971  | pbkdf2_sha256$720000$WfkcTqk1iOtrjMNr5qqjyT$8RSUCcE9YJjZCRPqrx5PYA738DTDLf0BNvcNZRYBfoQ=
+        username = validated_data.get('username') # biznes_menejer
 
         if User.objects.filter(username=username).exists():
-            raise serializers.ValidationError("User already exists.")
+            raise serializers.ValidationError("Sorry, this user is already registered.")
 
-        user = User(username=username)
-
+        user = User(username=username) # biznes_menejer
         user.set_password(password)
+
         user.save()
 
-
         return user
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # password = serializers.CharField(
+    #     write_only=True,
+    #     required=True,
+    #     min_length=8,
+    #     style={'input_type': 'password'}
+    # )
+    #
+    # password_confirm = serializers.CharField(
+    #     write_only=True,
+    #     required=True,
+    #     style={'input_type': 'password'}
+    # )
+    #
+    # username = serializers.CharField(
+    #     validators=[UnicodeUsernameValidator()],
+    #     min_length=3,
+    #     max_length=20,
+    #     required=True
+    #
+    # )
+    #
+    # class Meta:
+    #     model = User
+    #     fields = ["username", "password", "password_confirm"]
+    #
+    # def validate(self, data):
+    #     password = data.get('password')
+    #     password_confirm = data.get('password_confirm')
+    #
+    #     if password and password_confirm and password != password_confirm:
+    #         raise serializers.ValidationError("The password and the repeated password are not the same!")
+    #
+    #     return data
+    #
+    # def create(self, validated_data):
+    #     username = validated_data.get("username")
+    #     password = validated_data.get("password")
+    #
+    #     if User.objects.filter(username=username).exists():
+    #         raise serializers.ValidationError("User already exists.")
+    #
+    #     user = User(username=username)
+    #
+    #     user.set_password(password)
+    #     user.save()
+    #
+    #
+    #     return user
